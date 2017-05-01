@@ -1,0 +1,10 @@
+Plugin para agregar una capa de control al campo de descuentos y precios en los artículos.<br/>
+<br/>
+Aplica para los siguientes documentos:<br/>
+<ul>
+<li>Pedidos de Venta</li>
+<li>Albaranes de Venta</li>
+<li>Facturas de Venta</li>
+</ul>
+<br/>
+Licencia <b>LGPL 3</b>
