@@ -47,6 +47,8 @@ class autorizar_descuento extends fs_controller{
         $data['usuario']=$usuario;
         $data['password']=$password;
         $data['descuento']=$descuento;
+        $data['success']=true;
+        $data['mensaje']='';
         $this->template = false;
         header('Content-Type: application/json');
         echo json_encode($data);
