@@ -16,7 +16,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+require_model('autoriza_descuento.php');
+require_model('autorizaciones_descuento.php');
 /**
  * Description of admin_autorizaciones
  *
@@ -24,8 +25,12 @@
  */
 class admin_autorizaciones extends fs_controller{
     public $allow_delete;
+    public $autoriza_descuento;
     public function __construct() {
         parent::__construct(__CLASS__, 'Autorización de Descuentos', 'contabilidad', FALSE, TRUE, FALSE);
+        //Cargamos las tablas
+        new autoriza_descuento();
+        new autorizaciones_descuento();
     }
 
     protected function private_core() {
@@ -35,7 +40,49 @@ class admin_autorizaciones extends fs_controller{
         $this->shared_extensions();
         // ¿El usuario tiene permiso para eliminar en esta página?
         $this->allow_delete = $this->user->allow_delete_on(__CLASS__);
-
+        $this->autoriza_descuento = new autoriza_descuento();
+        $accion = \filter_input(INPUT_POST, 'accion');
+        switch($accion)
+        {
+            case "eliminar":
+            case "agregar":
+                $this->tratar_usuario($accion);
+            break;
+            default:
+            break;
+        }
+    }
+    
+    private function tratar_usuario($accion)
+    {
+        $usuario = \filter_input(INPUT_POST, 'usuario');
+        if($usuario){
+            $auth = new autoriza_descuento();
+            $auth->usuario = $usuario;
+            $auth->fecha_creacion = \date('d-m-Y H:i:s');
+            $auth->usuario_creacion = $this->user->nick;
+            if($accion=='agregar'){
+                $auth->estado = TRUE;
+                if($auth->save())
+                {
+                    $this->new_message('Usuario agregado exitosamente para autorizar descuentos.');
+                }
+                else
+                {
+                    $this->new_error_msg('No se pudo agregar el usuario, por favor intentelo nuevamente.');
+                }
+            }else{
+                $auth->estado = "FALSE";
+                if($auth->delete())
+                {
+                    $this->new_message('Usuario desactivado exitosamente para autorizar descuentos.');
+                }
+                else
+                {
+                    $this->new_error_msg('No se pudo desactivar el usuario, por favor intentelo nuevamente.');
+                }
+            }
+        }
     }
 
     /**
@@ -93,6 +140,22 @@ class admin_autorizaciones extends fs_controller{
                 'name' => '001_admin_autorizaciones_js',
                 'page_from' => 'nueva_venta',
                 'page_to' => 'nueva_venta',
+                'type' => 'head',
+                'text' => '<script src='.FS_PATH.'"plugins/autorizar_descuento/view/js/autorizar_descuento.js" type="text/javascript"></script>',
+                'params' => ''
+            ),
+            array(
+                'name' => '002_admin_autorizaciones_js',
+                'page_from' => 'ventas_pedido',
+                'page_to' => 'ventas_pedido',
+                'type' => 'head',
+                'text' => '<script src='.FS_PATH.'"plugins/autorizar_descuento/view/js/autorizar_descuento.js" type="text/javascript"></script>',
+                'params' => ''
+            ),
+            array(
+                'name' => '003_admin_autorizaciones_js',
+                'page_from' => 'ventas_albaran',
+                'page_to' => 'ventas_albaran',
                 'type' => 'head',
                 'text' => '<script src='.FS_PATH.'"plugins/autorizar_descuento/view/js/autorizar_descuento.js" type="text/javascript"></script>',
                 'params' => ''

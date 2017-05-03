@@ -21,8 +21,70 @@
  * @param {type} element
  * @returns number
  */
-function verificarDescuento(element){
+function verificarDescuento(element)
+{
     element.value = element.value.replace(/[^0-9\.]/g,'');
+}
+
+function nuevaVenta(tipoDocumento)
+{
+    //Verificamos si ya se cargó el formulario de nueva_venta y si el documento no es del tipo presupuesto
+    if ($("#f_new_albaran").length === 1 && tipoDocumento!=='presupuesto') {
+        //Buscamos la primera linea de ayuda para modificarla indicando la presencia del plugin autorizar_descuento
+        var textoAyuda = $("div.col-sm-6 > p.help-block").first();
+        textoAyuda.html('<span class="text-warning fa fa-2x fa-info-circle"></span>&nbsp;Está activo el plugin <b>Autorizar Descuento</b> por lo que deberá de solicitar autorización para aplicar un descuento a un usuario autorizado para realizar esta acción.');
+        //buscamos el boton guardar
+        var botonGuardar = $("button:contains('Guardar...')");
+        //Le agregamos antes de este el boton de Autorizar descuento
+        botonGuardar.closest("div").prepend('<button id="btn_autorizar_descuento" class="btn btn-sm btn-warning"><span class="fa fa-unlock"></span>&nbsp;Autorizar Descuento</button>');
+        //Hacemos un seguimiento a las lineas_albaran para restringir a readonly cuando se agregue una linea nueva
+        $('#lineas_albaran').bind('DOMNodeInserted', function(element) {
+            var item = element.target.id;
+            var item_parts = item.split('_');
+            var linea = item_parts[1];
+            $('#pvp_'+linea).attr('readonly','true');
+            $('#dto_'+linea).attr('readonly','true');
+            $('#neto_'+linea).attr('readonly','true');
+            $('#iva_'+linea).attr('readonly','true');
+            $('#total_'+linea).attr('readonly','true');
+        });
+    }
+
+    
+}
+
+function ventas(formulario)
+{
+    //Verificamos si ya se cargó el formulario de ventas_pedido
+    if (formulario) {
+        //buscamos el boton imprimir
+        var botonImprimir = $("#b_imprimir");
+        //Le agregamos despues de este el boton de Autorizar descuento
+        botonImprimir.closest("div").append('<button id="btn_autorizar_descuento" class="btn btn-sm btn-default"><span class="fa fa-unlock"></span>&nbsp;Autorizar Descuento</button>');
+        //Activamos el control para que no modifiquen la información de las lineas
+        $('#lineas_albaran > tr').each(function(idx) {
+            var item = this.id;
+            var item_parts = item.split('_');
+            var linea = item_parts[1];
+            $('#pvp_'+linea).attr('readonly','true');
+            $('#dto_'+linea).attr('readonly','true');
+            $('#neto_'+linea).attr('readonly','true');
+            $('#iva_'+linea).attr('readonly','true');
+            $('#total_'+linea).attr('readonly','true');
+        });
+        
+        //Hacemos un seguimiento a las lineas_albaran para restringir a readonly cuando se agregue una linea nueva
+        $('#lineas_albaran').bind('DOMNodeInserted', function(element) {
+            var item = element.target.id;
+            var item_parts = item.split('_');
+            var linea = item_parts[1];
+            $('#pvp_'+linea).attr('readonly','true');
+            $('#dto_'+linea).attr('readonly','true');
+            $('#neto_'+linea).attr('readonly','true');
+            $('#iva_'+linea).attr('readonly','true');
+            $('#total_'+linea).attr('readonly','true');
+        });
+    }
 }
 
 $(document).ready(function()
@@ -41,112 +103,183 @@ $(document).ready(function()
             }
         }
     };
-
-    //Guardamos el tipo de documento que se va autorizar
-    var tipoDocumento = getUrlParameter('tipo');
-
-    //Verificamos si ya se cargó el formulario de nueva_venta y si el documento no es del tipo presupuesto
-    if ($("#f_new_albaran").length === 1 && tipoDocumento!=='presupuesto') {
-        //Buscamos la primera linea de ayuda para modificarla indicando la presencia del plugin autorizar_descuento
-        var textoAyuda = $("div.col-sm-6 > p.help-block").first();
-        textoAyuda.html('<span class="text-warning fa fa-2x fa-info-circle"></span>&nbsp;Está activo el plugin <b>Autorizar Descuento</b> por lo que deberá de solicitar autorización para aplicar un descuento a un usuario autorizado para realizar esta acción.');
-        //buscamos el boton guardar
-        var botonGuardar = $("button:contains('Guardar...')");
-        //Le agregamos antes de este el boton de Autorizar descuento
-        botonGuardar.closest("div").prepend('<button id="btn_autorizar_descuento" class="btn btn-sm btn-warning"><span class="fa fa-unlock"></span>&nbsp;Autorizar Descuento</button>');
-        //Obtenemos el nombre del cliente
-        var nombreCliente = $('h1 > a').text();
-        var codigoCliente = document.f_new_albaran.cliente.value;
-        //Hacemos un seguimiento a las lineas_albaran para restringir a readonly cuando se agregue una linea nueva
-        $('#lineas_albaran').bind('DOMNodeInserted', function(element) {
-            var item = element.target.id;
-            var item_parts = item.split('_');
-            var linea = item_parts[1];
-            $('#pvp_'+linea).attr('readonly','true');
-            $('#dto_'+linea).attr('readonly','true');
-            $('#neto_'+linea).attr('readonly','true');
-            $('#iva_'+linea).attr('readonly','true');
-            $('#total_'+linea).attr('readonly','true');
-        });
+    
+    //Obtenemos la información de la página
+    var page = getUrlParameter('page');
+    //Obtenemos el nick del usuario solicitante
+    var usuario = $("li.user > a > span").text();
+    
+    switch(page){
+        case 'nueva_venta':
+            //Guardamos el tipo de documento que se va autorizar
+            var tipoDocumento = getUrlParameter('tipo');
+            if($("#f_new_albaran").length === 1){
+                var nombreCliente = $('h1 > a').text();
+                var codigoCliente = document.f_new_albaran.cliente.value;
+                var iddocumento = 0;
+                var documento = tipoDocumento;
+                
+            }
+            nuevaVenta(tipoDocumento);
+            break;
+        case 'ventas_pedido':
+            var pendiente = $("button:contains('Pendiente')");
+            if(pendiente){
+                var nombreCliente = document.f_pedido.ac_cliente.value;
+                var codigoCliente = document.f_pedido.cliente.value;
+                var iddocumento = document.f_pedido.idpedido.value;
+                var documento = 'pedido';
+                ventas(document.f_pedido);
+            }
+            break;
+        case 'ventas_albaran':
+            var pendiente = $("button:contains('Pendiente')");
+            if(pendiente){
+                var nombreCliente = document.f_albaran.ac_cliente.value;
+                var codigoCliente = document.f_albaran.cliente.value;
+                var iddocumento = document.f_albaran.idalbaran.value;
+                var documento = 'albaran';
+                ventas(document.f_albaran);
+            }
+            break;
+        default:
+            break;
     }
-
+    
     $('#btn_autorizar_descuento').click(function(event) {
-        event.preventDefault();
         var lineas = $("#lineas_albaran > tr").length;
+        event.preventDefault();
         if(lineas>0){
             bootbox.dialog({
                 title: "<b>¿Autorizar descuento para el cliente "+nombreCliente+"?</b>",
                 message: '<div class="row">  ' +
-                    '<div class="col-sm-12 col-md-12"> ' +
-                    '<form id="f_autorizar_descuento" class="form"> ' +
-                    '<input name="codcliente" type="hidden" value="'+codigoCliente+'"> ' +
-                    '<input name="accion" type="hidden" value="autorizar"> ' +
-                    '<div class="form-group"> ' +
-                    '<label class="col-sm-4 col-md-4 control-label" for="usuario">Usuario</label> ' +
-                    '<div class="col-sm-8 col-md-8"> ' +
-                        '<div class="col-sm-7 col-md-7"> ' +
-                            '<input id="usuario" name="usuario" autocomplete="off" type="text" required placeholder="Usuario que autoriza" class="col-sm-4 form-control input-sm"> ' +
-                        '</div> ' +
-                    '</div> ' +
-                    '<div class="form-group"> ' +
-                    '<label class="col-sm-4 col-md-4 control-label" for="password">Clave</label> ' +
-                    '<div class="col-sm-8 col-md-8"> ' +
-                        '<div class="col-sm-7 col-md-7"> ' +
-                            '<input id="password" name="password" type="password" required class="form-control input-sm" placeholder="Clave de autorización"> ' +
-                        '</div> ' +
-                    '</div> ' +
-                    '<div class="form-group"> ' +
-                    '<label class="col-sm-4 col-md-4 control-label" for="descuento">Descuento</label> ' +
-                    '<div class="col-sm-8 col-md-8"> ' +
-                        '<div class="col-sm-3 col-md-3"> ' +
-                            '<input id="descuento" autocomplete="off" name="descuento" onkeyup="verificarDescuento(this)" type="text" required class="form-control input-sm"> ' +
-                        '</div> ' +
-                    '</div> ' +
-                    '<div class="col-md-4"> ' +
-                    '</div> ' +
-                    '<div class="col-md-8"> ' +
-                    '<span class="help-block">Ingrese el porcentaje de descuento autorizado</span> </div> ' +
-                    '</div> ' +
-                    '</div> </div>' +
-                    '</form> </div>  </div>',
+                        '<form id="f_autorizar_descuento" class="form"> ' +
+                            '<div class="col-sm-12"> ' +
+                                '<input name="codcliente" type="hidden" value="'+codigoCliente+'"> ' +
+                                '<input name="solicitante" type="hidden" value="'+usuario+'"> ' +
+                                '<input name="iddocumento" type="hidden" value="'+iddocumento+'"> ' +
+                                '<input name="documento" type="hidden" value="'+documento+'"> ' +
+                                '<input name="accion" type="hidden" value="autorizar"> ' +
+                                '<div id="usuario" class="form-group"> ' +
+                                    '<label class="col-sm-4 control-label" for="usuario">Usuario</label> ' +
+                                    '<div class="col-sm-8"> ' +
+                                        '<div class="col-sm-7"> ' +
+                                            '<input id="usuario_input" name="usuario" autocomplete="off" type="text" required placeholder="Usuario que autoriza" class="col-sm-4 form-control input-sm"> ' +
+                                        '</div> ' +
+                                    '</div> ' +
+                                '</div>'+ 
+                                '<div id="password" class="form-group"> ' +
+                                    '<label class="col-sm-4 control-label" for="password">Clave</label> ' +
+                                    '<div class="col-sm-8"> ' +
+                                        '<div class="col-sm-7"> ' +
+                                            '<input id="password_input" name="password" type="password" required class="form-control input-sm" placeholder="Clave de autorización"> ' +
+                                        '</div> ' +
+                                    '</div> ' +
+                                '</div>'+    
+                                '<div  id="descuento" class="form-group"> ' +
+                                    '<label class="col-sm-4 control-label" for="descuento">Descuento</label> ' +
+                                    '<div class="col-sm-8"> ' +
+                                        '<div class="col-sm-3"> ' +
+                                            '<input autocomplete="off" id="descuento_input" name="descuento" onkeyup="verificarDescuento(this)" type="text" required class="form-control input-sm"> ' +
+                                        '</div> ' +
+                                    '</div> ' +
+                                    '<div class="col-sm-4"> ' +
+                                    '</div> ' +
+                                    '<div class="col-sm-8"> ' +
+                                        '<span class="help-block">Ingrese el porcentaje de descuento autorizado</span> ' +
+                                    '</div> ' +
+                                '</div>' +
+                            '</div>'+
+                            
+                        '</form>'+
+                    '</div>'+
+                    '<div class="well text-info">' +
+                        '¡El descuento solo se aplicará a los artículos que no tengan un descuento aplicado!'+
+                    '</div>'+
+                    '<div id="alerta_autorizacion" class="alert alert-warning hidden">' +
+                    '</div>',
                 buttons: {
                     success: {
                         label: '<span class="fa fa-unlock"></span> Autorizar',
                         className: "btn-sm btn-success",
                         callback: function () {
-                            $.ajax({
-                                type: 'POST',
-                                url: 'index.php?page=autorizar_descuento',
-                                async: false,
-                                data: $('#f_autorizar_descuento').serialize(),
-                                success : function(datos) {
-                                    if(datos.success){
-                                        $('#lineas_albaran > tr').each(function(idx) {
-                                            var item = this.id;
-                                            var item_parts = item.split('_');
-                                            var linea = item_parts[1];
-                                            if($('#dto_'+linea).val()==='0'){
-                                                $('#dto_'+linea).val(datos.descuento);
-                                            }
-                                        });
-                                        recalcular();
-                                        bootbox.alert({
-                                            title: "¡Descuento autorizado!",
-                                            message: 'Se ha autorizado el descuento y recalculado los valores, proceda a guardar el documento.<br/>'+
-                                                'Si agrega una nueva linea despues de esta autorización no se le aplicará el descuento.'
-                                        });
+                            //Verificamos si llenaron los datos del formulario
+                            if(!$('#alerta_autorizacion').hasClass('hidden')){
+                                $('#alerta_autorizacion').addClass('hidden');
+                            }
+                            
+                            if($('#usuario').hasClass('has-error')){
+                                $('#usuario').removeClass('has-error');
+                            }
+                            
+                            if($('#password').hasClass('has-error')){
+                                $('#password').removeClass('has-error');
+                            }
+                            
+                            if($('#descuento').hasClass('has-error')){
+                                $('#descuento').removeClass('has-error');
+                            }
+                            
+                            var continuar = false;
+                            if($('#usuario_input').val()!=='' && $('#password_input').val()!=='' && $('#descuento_input').val()!=='' ){
+                                continuar = true;
+                            }
+                            if(continuar){
+                                $.ajax({
+                                    type: 'POST',
+                                    url: 'index.php?page=autorizar_descuento',
+                                    async: false,
+                                    data: $('#f_autorizar_descuento').serialize(),
+                                    success : function(datos) {
+                                        if(datos.success){
+                                            $('#lineas_albaran > tr').each(function(idx) {
+                                                var item = this.id;
+                                                var item_parts = item.split('_');
+                                                var linea = item_parts[1];
+                                                if($('#dto_'+linea).val()==='0'){
+                                                    $('#dto_'+linea).val(datos.descuento);
+                                                }
+                                            });
+                                            recalcular();
+                                            bootbox.alert({
+                                                title: "¡Descuento autorizado!",
+                                                message: datos.mensaje+'<br/>Se han recalculado los valores, proceda a guardar el documento.<br/>'+
+                                                    'Si agrega una nueva linea despues de esta autorización no se aplicará el descuento.'
+                                            });
+                                        }
+                                        else{
+                                            bootbox.alert({
+                                                title: "¡Descuento no autorizado!",
+                                                message: datos.mensaje
+                                            });
+                                        }
+                                    },
+                                    error: function(datos) {
+                                        bootbox.alert("Ocurrio un error no contemplado en el plugin, por favor envie un mensaje en el foro de soporte de FacturaScripts para verificar el problema, gracias.");
                                     }
-                                    else{
-                                        bootbox.alert({
-                                            title: "¡Descuento no autorizado!",
-                                            message: datos.mensaje
-                                        });
-                                    }
-                                },
-                                error: function(datos) {
-                                    bootbox.alert("Ocurrio un error no contemplado en el plugin, por favor envie un mensaje en el foro de soporte de FacturaScripts para verificar el problema, gracias.");
+                                });
+                            }
+                            else
+                            {
+                                
+                                if($('#usuario_input').val()==='')
+                                {
+                                    $('#usuario').addClass('has-error');
                                 }
-                            });
+                                
+                                if($('#password_input').val()==='')
+                                {
+                                    $('#password').addClass('has-error');
+                                }
+                                
+                                if($('#descuento_input').val()==='')
+                                {
+                                    $('#descuento').addClass('has-error');
+                                }
+                                $('#alerta_autorizacion').html('Complete la información de los campos resaltados en rojo');
+                                $('#alerta_autorizacion').removeClass('hidden');
+                                return false;
+                            }
                         }
                     },
                     danger: {
@@ -164,6 +297,8 @@ $(document).ready(function()
             bootbox.alert({title:'Solicitud incompleta',message:'¡Debes agregar artículos antes de solicitar una autorización de descuento!'});
         }
     });
+
+    
 });
 
 

@@ -16,7 +16,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+require_model('autoriza_descuento.php');
+require_model('autorizaciones_descuento.php');
 /**
  * Description of autorizar_descuento
  *
@@ -24,12 +25,14 @@
  */
 class autorizar_descuento extends fs_controller{
     public $accion;
-    public $user;
+    public $autoriza;
+    public $autorizaciones_descuento;
     public function __construct() {
         parent::__construct(__CLASS__, 'Descuentos', 'contabilidad', FALSE, FALSE, FALSE);
     }
 
-    protected function private_core() {
+    protected function private_core() 
+    {
         $accion = \filter_input(INPUT_POST,'accion');
         switch ($accion){
             case "autorizar":
@@ -40,17 +43,66 @@ class autorizar_descuento extends fs_controller{
         }
     }
 
-    private function verificar_informacion(){
+    private function verificar_informacion()
+    {
         $usuario = \filter_input(INPUT_POST, 'usuario');
         $password = \filter_input(INPUT_POST, 'password');
         $descuento = \filter_input(INPUT_POST, 'descuento');
-        $data['usuario']=$usuario;
-        $data['password']=$password;
-        $data['descuento']=$descuento;
-        $data['success']=true;
+        $codcliente = \filter_input(INPUT_POST, 'codcliente');
+        $solicitante = \filter_input(INPUT_POST, 'solicitante');
+        $documento = \filter_input(INPUT_POST, 'documento');
+        $iddocumento = \filter_input(INPUT_POST, 'iddocumento');
+        $data['success']=false;
         $data['mensaje']='';
+        if($this->autorizado($usuario,$password)){
+            $autorizacion = new autorizaciones_descuento();
+            $autorizacion->usuario = $usuario;
+            $autorizacion->solicitante = $solicitante;
+            $autorizacion->fecha = \date('d-m-Y');
+            $autorizacion->codcliente = $codcliente;
+            $autorizacion->descuento = $descuento;
+            $autorizacion->documento = $documento;
+            $autorizacion->iddocumento = $iddocumento;
+            $autorizacion->usuario_creacion = $this->user->nick;
+            $autorizacion->fecha_creacion = \date('d-m-Y H:i:s');
+            if($autorizacion->save())
+            {
+                $data['success']=true;
+                $data['descuento']=$descuento;
+                $data['mensaje']='¡Autorización número '.$autorizacion->id.' guardada correctamente!';
+            }else{
+                $data['mensaje']='¡Ocurrió un error al guardar la autorización, intentelo nuevamente!';
+            }
+        }else{
+            $data['mensaje']='¡Usuario no autorizado!';
+        }
         $this->template = false;
         header('Content-Type: application/json');
         echo json_encode($data);
+    }
+    
+    
+    /**
+     * Verificamos el usuario de forma sencilla, esto despues debería de llamarse de un controller de autentificacion
+     * @param type $usuario
+     * @param type $password
+     * @return boolean
+     */
+    private function autorizado($usuario,$password)
+    {
+        $user = $this->user->get($usuario);
+        if($user AND $user->enabled)
+        {
+            if( $user->password == sha1($password) OR $user->password == sha1( mb_strtolower($password, 'UTF8') ) )
+            {
+                $auth = new autoriza_descuento();
+                $user = $auth->get($usuario);
+                return ($user)?true:false;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

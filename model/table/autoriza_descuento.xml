@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Document   : autoriza_descuento.xml
+    Author     : joenilson at gmail dot com     
+    Description:
+        Estructura de la tabla autoriza_descuento.
+-->
+<tabla>
+    <columna>
+        <nombre>fecha_creacion</nombre>
+        <tipo>timestamp without time zone</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>usuario</nombre>
+        <tipo>character varying(12)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>usuario_creacion</nombre>
+        <tipo>character varying(12)</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <columna>
+        <nombre>estado</nombre>
+        <tipo>boolean</tipo>
+        <nulo>NO</nulo>
+    </columna>
+    <restriccion>
+        <nombre>pk_autoriza_descuento</nombre>
+        <consulta>PRIMARY KEY (usuario)</consulta>
+    </restriccion>
+</tabla>

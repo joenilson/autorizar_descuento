@@ -15,4 +15,92 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-7">
+            <div class="btn-group hidden-xs">
+                <a class="btn btn-sm btn-default" href="{$fsc->url()}" title="Recargar la página">
+                    <span class="glyphicon glyphicon-refresh"></span>
+                </a>
+            </div>
+            <div class="btn-group">
+                <a class="btn btn-sm btn-success"  data-toggle="modal" data-target="#nuevo_usuario" role="button">
+                    <span class="glyphicon glyphicon-plus"></span> &nbsp; Nuevo
+                </a>
+                {loop="$fsc->extensions"}
+                {if="$value->type=='button'"}
+                <a href="index.php?page={$value->from}" class="btn btn-sm btn-default">{$value->text}</a>
+                {/if}
+                {/loop}
+            </div>
+        </div>
+        <div class="col-sm-5 text-right">
+            <h2 style="margin-top: 0px;"><span class="fa fa-unlock"></span>&nbsp;Autorización de Descuentos</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Creado por</th>
+                        <th>Creado el</th>
+                        <th>Estado</th>
+                        <th>Autorizaciones</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {loop="$fsc->autoriza_descuento->all()"}
+                    <tr>
+                        <td>{$value->usuario}</td>
+                        <td>{$value->usuario_creacion}</td>
+                        <td>{$value->fecha_creacion}</td>
+                        <td class="text-center">{if="$value->estado"}Activo{else}Inactivo{/if}</td>
+                        <td><button class="btn btn-sm btn-default">{$value->total_autorizaciones()}</button></td>
+                        <td><button class="btn btn-sm btn-danger" id="b_eliminar_usuario"><span class="fa fa-trash"></span></button></td>
+                    </tr>
+                    {else}
+                    <tr>
+                        <td colspan="5" class="text-warning bg-warning">
+                            No hay usuarios habilitados para autorizar descuentos. Agregue uno con el boton <b>Nuevo</b>
+                        </td>
+                        
+                    </tr>
+                    {/loop}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="nuevo_usuario" tabindex="-1" role="dialog" aria-labelledby="nuevo_usuarioLabel">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="nuevo_usuarioLabel">Agregar Usuario</h4>
+            </div>
+            <form name="f_usuario_autoriza" action="{$fsc->url()}" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="accion" value="agregar">
+                    <select name="usuario" required class="col-sm-3 form-control input-sm">
+                        <option value="">Elije un usuario</option>
+                        {loop="$fsc->user->all()"}
+                        <option value="{$value->nick}">{$value->nick}</option>
+                        {/loop}
+                    </select>
+                    <div class="clearfix"></div>
+                </div>
+                
+                    
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Agregar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {include="footer"}
