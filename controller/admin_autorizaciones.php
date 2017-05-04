@@ -36,8 +36,6 @@ class admin_autorizaciones extends fs_controller{
     protected function private_core() {
         //Primero revisamos si están activas todas las páginas del menú
         $this->check_menu();
-        //Luego cargamos las extensiones asociadas
-        $this->shared_extensions();
         // ¿El usuario tiene permiso para eliminar en esta página?
         $this->allow_delete = $this->user->allow_delete_on(__CLASS__);
         $this->autoriza_descuento = new autoriza_descuento();
@@ -142,43 +140,4 @@ class admin_autorizaciones extends fs_controller{
 
         $this->load_menu(TRUE);
     }
-
-    public function shared_extensions(){
-        $extensiones = array(
-            array(
-                'name' => '001_admin_autorizaciones_js',
-                'page_from' => __CLASS__,
-                'page_to' => 'nueva_venta',
-                'type' => 'head',
-                'text' => '<script src='.FS_PATH.'"plugins/autorizar_descuento/view/js/autorizar_descuento.js" type="text/javascript"></script>',
-                'params' => ''
-            ),
-            array(
-                'name' => '002_admin_autorizaciones_js',
-                'page_from' => __CLASS__,
-                'page_to' => 'ventas_albaran',
-                'type' => 'head',
-                'text' => '<script src='.FS_PATH.'"plugins/autorizar_descuento/view/js/autorizar_descuento.js" type="text/javascript"></script>',
-                'params' => ''
-            ),
-        );
-        //Si está el plugin de presupuestos y pedidos agregamos si header
-        if(in_array('presupuestos_y_pedidos',$GLOBALS['plugins'])){
-            $extensiones[] = array(
-                'name' => '003_admin_autorizaciones_js',
-                'page_from' => __CLASS__,
-                'page_to' => 'ventas_pedido',
-                'type' => 'head',
-                'text' => '<script src='.FS_PATH.'"plugins/autorizar_descuento/view/js/autorizar_descuento.js" type="text/javascript"></script>',
-                'params' => ''
-            );
-        }
-        foreach($extensiones as $del){
-            $fext = new fs_extension($del);
-            if(!$fext->save()){
-                $this->new_error_msg('Imposible guardar los datos de la extensión ' . $ext['name'] . '.');
-            }
-        }
-    }
-
 }
