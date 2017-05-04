@@ -147,7 +147,7 @@ class admin_autorizaciones extends fs_controller{
         $extensiones = array(
             array(
                 'name' => '001_admin_autorizaciones_js',
-                'page_from' => 'nueva_venta',
+                'page_from' => __CLASS__,
                 'page_to' => 'nueva_venta',
                 'type' => 'head',
                 'text' => '<script src='.FS_PATH.'"plugins/autorizar_descuento/view/js/autorizar_descuento.js" type="text/javascript"></script>',
@@ -155,7 +155,7 @@ class admin_autorizaciones extends fs_controller{
             ),
             array(
                 'name' => '002_admin_autorizaciones_js',
-                'page_from' => 'ventas_pedido',
+                'page_from' => __CLASS__,
                 'page_to' => 'ventas_pedido',
                 'type' => 'head',
                 'text' => '<script src='.FS_PATH.'"plugins/autorizar_descuento/view/js/autorizar_descuento.js" type="text/javascript"></script>',
@@ -163,7 +163,7 @@ class admin_autorizaciones extends fs_controller{
             ),
             array(
                 'name' => '003_admin_autorizaciones_js',
-                'page_from' => 'ventas_albaran',
+                'page_from' => __CLASS__,
                 'page_to' => 'ventas_albaran',
                 'type' => 'head',
                 'text' => '<script src='.FS_PATH.'"plugins/autorizar_descuento/view/js/autorizar_descuento.js" type="text/javascript"></script>',
