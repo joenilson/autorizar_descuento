@@ -40,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </div>
     <div class="row">
         <div class="table-responsive">
-            <table class="table table-hover">
+            <table class="table table-condensed table-hover">
                 <thead>
                     <tr>
                         <th>Usuario</th>
@@ -54,12 +54,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <tbody>
                     {loop="$fsc->autoriza_descuento->all()"}
                     <tr>
+                        
                         <td>{$value->usuario}</td>
                         <td>{$value->usuario_creacion}</td>
                         <td>{$value->fecha_creacion}</td>
                         <td class="text-center">{if="$value->estado"}Activo{else}Inactivo{/if}</td>
-                        <td><button class="btn btn-sm btn-default">{$value->total_autorizaciones()}</button></td>
-                        <td><button class="btn btn-sm btn-danger" id="b_eliminar_usuario"><span class="fa fa-trash"></span></button></td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-default" onclick="mostrarAutorizaciones('{$value->usuario}')">
+                                {$value->total_autorizaciones()}
+                            </button>
+                        </td>
+                        <td>
+                            <form method="POST" name="f_autoriza_{$counter}" action="{$fsc->url()}">
+                                <input type="hidden" name="accion" value="">
+                                <input type="hidden" name="usuario" value="{$value->usuario}">
+                                {if="$value->estado"}
+                                <button type="button" class="btn btn-sm btn-danger" onclick="this.form.accion.value='desactivar';tratarUsuario(this.form,'{$value->usuario}','desactivar')"><span class="fa fa-trash"></span></button>
+                                {else}
+                                    <button type="button" class="btn btn-sm btn-warning" onclick="this.form.accion.value='activar';tratarUsuario(this.form,'{$value->usuario}','activar')"><span class="fa fa-undo"></span></button>
+                                {/if}
+                            </form>
+                        </td>
                     </tr>
                     {else}
                     <tr>
@@ -93,8 +108,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     </select>
                     <div class="clearfix"></div>
                 </div>
-                
-                    
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary">Agregar</button>
@@ -103,4 +116,46 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </div>
     </div>
 </div>
+<div class="modal" id="modal_autorizaciones">
+    <div class="modal-dialog" style="width: 99%; max-width: 950px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Autorizaciones realizadas</h4>
+            </div>
+            <div class="modal-body" id='modal_body_autorizaciones'>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+function mostrarAutorizaciones(usuario){
+    $('#modal_autorizaciones').modal('show');
+    $("#autorizaciones_usuario").detach();
+    $("<iframe id='autorizaciones_usuario' />")
+      .attr('src', '{#FS_PATH#}{#FS_MYDOCS#}index.php?page=ver_autorizaciones&usuario='+usuario)
+      .attr('width', '100%')
+      .attr('height', '500')
+      .appendTo('#modal_body_autorizaciones');
+}
+
+function tratarUsuario(form,usuario,accion)
+{
+    bootbox.confirm({
+        title: accion+' Usuario',
+        message: '¿Está seguro que quiere '+accion+' el usuario '+usuario+'?',
+        callback: function(resultado){
+            if(resultado)
+            {
+                form.submit();
+            }
+        }
+    });
+}
+$(document).ready(function()
+{
+    bootbox.setLocale('es');
+});
+</script>
 {include="footer"}

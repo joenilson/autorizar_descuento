@@ -165,15 +165,15 @@ class autorizaciones_descuento extends \fs_model {
     public function all_usuario($usuario=false,$solicitante=false)
     {
         $lista = array();
-        $query = "usuario != '' AND ";
+        $query = "usuario != '' ";
         if($usuario)
         {
-            $query .= " usuario = ".$this->var2str($usuario)." AND ";
+            $query .= " AND usuario = ".$this->var2str($usuario);
         }
         
         if($solicitante)
         {
-            $query .= " solicitante = ".$this->var2str($solicitante);
+            $query .= " AND solicitante = ".$this->var2str($solicitante);
         }
         $sql = "SELECT * FROM ".$this->table_name." WHERE ".$query." ORDER BY usuario,solicitante";
         $data = $this->db->select($sql);

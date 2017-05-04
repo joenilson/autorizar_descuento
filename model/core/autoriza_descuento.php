@@ -53,7 +53,7 @@ class autoriza_descuento extends \fs_model {
             $this->usuario = $t['usuario'];
             $this->usuario_creacion = $t['usuario_creacion'];
             $this->fecha_creacion = $t['fecha_creacion'];
-            $this->estado = $this->str2bool($t['fecha_creacion']);
+            $this->estado = $this->str2bool($t['estado']);
             
         }
         else
@@ -72,6 +72,20 @@ class autoriza_descuento extends \fs_model {
     public function get($usuario)
     {
         $sql = "SELECT * FROM ".$this->table_name." WHERE usuario = ".$this->var2str($usuario);
+        $data = $this->db->select($sql);
+        if($data)
+        {
+            return new autoriza_descuento($data[0]);
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    public function get_activo($usuario)
+    {
+        $sql = "SELECT * FROM ".$this->table_name." WHERE estado = TRUE AND usuario = ".$this->var2str($usuario);
         $data = $this->db->select($sql);
         if($data)
         {
@@ -128,6 +142,16 @@ class autoriza_descuento extends \fs_model {
     
     public function delete() {
         $sql = "UPDATE ".$this->table_name." SET estado = FALSE WHERE usuario = ".$this->var2str($this->usuario);
+        return $this->db->exec($sql);
+    }
+    
+    public function desactivar() {
+        $sql = "UPDATE ".$this->table_name." SET estado = FALSE WHERE usuario = ".$this->var2str($this->usuario);
+        return $this->db->exec($sql);
+    }
+    
+    public function activar() {
+        $sql = "UPDATE ".$this->table_name." SET estado = TRUE WHERE usuario = ".$this->var2str($this->usuario);
         return $this->db->exec($sql);
     }
     

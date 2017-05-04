@@ -44,7 +44,8 @@ class admin_autorizaciones extends fs_controller{
         $accion = \filter_input(INPUT_POST, 'accion');
         switch($accion)
         {
-            case "eliminar":
+            case "desactivar":
+            case "activar":
             case "agregar":
                 $this->tratar_usuario($accion);
             break;
@@ -65,21 +66,29 @@ class admin_autorizaciones extends fs_controller{
                 $auth->estado = TRUE;
                 if($auth->save())
                 {
-                    $this->new_message('Usuario agregado exitosamente para autorizar descuentos.');
+                    $this->new_message('Usuario <b>'.$usuario.'</b> agregado exitosamente para autorizar descuentos.');
                 }
                 else
                 {
-                    $this->new_error_msg('No se pudo agregar el usuario, por favor intentelo nuevamente.');
+                    $this->new_error_msg('No se pudo agregar el usuario <b>'.$usuario.'</b>, por favor intentelo nuevamente.');
                 }
-            }else{
-                $auth->estado = "FALSE";
-                if($auth->delete())
+            }elseif($accion=='desactivar'){
+                if($auth->desactivar())
                 {
-                    $this->new_message('Usuario desactivado exitosamente para autorizar descuentos.');
+                    $this->new_message('Usuario <b>'.$usuario.'</b> desactivado exitosamente para autorizar descuentos.');
                 }
                 else
                 {
-                    $this->new_error_msg('No se pudo desactivar el usuario, por favor intentelo nuevamente.');
+                    $this->new_error_msg('No se pudo desactivar el usuario <b>'.$usuario.'</b>, por favor intentelo nuevamente.');
+                }
+            }elseif($accion=='activar'){
+                if($auth->activar())
+                {
+                    $this->new_message('Usuario <b>'.$usuario.'</b> activado exitosamente para autorizar descuentos.');
+                }
+                else
+                {
+                    $this->new_error_msg('No se pudo activar el usuario <b>'.$usuario.'</b>, por favor intentelo nuevamente.');
                 }
             }
         }

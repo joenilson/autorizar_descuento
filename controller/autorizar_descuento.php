@@ -90,14 +90,15 @@ class autorizar_descuento extends fs_controller{
      */
     private function autorizado($usuario,$password)
     {
+        //Buscamos si el usuario está en el listado de usuarios
         $user = $this->user->get($usuario);
+        //Si existe 
         if($user AND $user->enabled)
         {
             if( $user->password == sha1($password) OR $user->password == sha1( mb_strtolower($password, 'UTF8') ) )
             {
                 $auth = new autoriza_descuento();
-                $user = $auth->get($usuario);
-                return ($user)?true:false;
+                return $auth->get_activo($usuario);
             }
             else
             {
