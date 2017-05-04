@@ -133,7 +133,7 @@ class autoriza_descuento extends \fs_model {
                 $this->var2str($this->fecha_creacion).",".
                 $this->var2str($this->estado).");";
                 if($this->db->exec($sql)){
-                    return $this->db->lastval();
+                    return true;
                 }else{
                     return false;
                 }
