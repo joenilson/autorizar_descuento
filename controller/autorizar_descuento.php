@@ -57,7 +57,7 @@ class autorizar_descuento extends fs_controller{
         if($this->autorizado($usuario,$password)){
             $autorizacion = new autorizaciones_descuento();
             $autorizacion->usuario = $usuario;
-            $autorizacion->solicitante = $solicitante;
+            $autorizacion->solicitante = ($solicitante)?$solicitante:$this->user->nick;
             $autorizacion->fecha = \date('d-m-Y');
             $autorizacion->codcliente = $codcliente;
             $autorizacion->descuento = $descuento;
