@@ -16,8 +16,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 namespace FacturaScripts\model;
+
+require_model('cliente.php');
 /**
  * Tabla con el listado de usuarios que pueden autorizar
  * descuentos a ser aplicados
@@ -79,6 +80,8 @@ class autorizaciones_descuento extends \fs_model {
      * @var type varchar(12)
      */
     public $usuario_creacion;
+    
+    public $cliente;
     public function __construct($t = false) {
         parent::__construct('autorizaciones_descuento','plugins/autorizar_descuento');
         if($t)
@@ -124,6 +127,20 @@ class autorizaciones_descuento extends \fs_model {
         }
     }
     
+    public function info_adicional($d)
+    {
+        $d->nombrecliente = false;
+        $d->razonsocial = false;
+        if($d->codcliente)
+        {
+            $cli = new cliente();
+            $info = $cli->get($d->codcliente);
+            $d->nombrecliente = $info->nombre;
+            $d->razonsocial = $info->razonsocial;
+        }
+        return $d;
+    }
+    
     public function save() {
         if($this->exists())
         {
@@ -156,7 +173,8 @@ class autorizaciones_descuento extends \fs_model {
         {
             foreach($data as $d)
             {
-                $lista[] = new autorizaciones_descuento($d);
+                $item = new autorizaciones_descuento($d);
+                $lista[] = $this->info_adicional($item);
             }
         }
         return $lista;
@@ -181,7 +199,8 @@ class autorizaciones_descuento extends \fs_model {
         {
             foreach($data as $d)
             {
-                $lista[] = new autorizaciones_descuento($d);
+                $item = new autorizaciones_descuento($d);
+                $lista[] = $this->info_adicional($item);
             }
         }
         return $lista;

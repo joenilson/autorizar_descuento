@@ -34,6 +34,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                            Cliente
                         </th>
                         <th>
+                           Nombre / Razon Social
+                        </th>
+                        <th>
+                           Descuento
+                        </th>
+                        <th>
                            Fecha de Solicitud 
                         </th>
                         <th>
@@ -48,6 +54,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                         <td>{$value->documento}</td>
                         <td>{$value->iddocumento}</td>
                         <td>{$value->codcliente}</td>
+                        <td>
+                            {if="$value->nombrecliente!=$value->razonsocial"}
+                            {$value->nombrecliente} / {$value->razonsocial}
+                            {else}
+                            {$value->razonsocial}
+                            {/if}
+                        </td>
+                        <td class='text-right'>{$value->descuento}%</td>
                         <td>{$value->fecha_creacion}</td>
                         <td>{$value->usuario_creacion}</td>
                     </tr>

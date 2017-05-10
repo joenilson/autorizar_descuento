@@ -114,6 +114,8 @@ $(document).ready(function()
             //Guardamos el tipo de documento que se va autorizar
             var tipoDocumento = getUrlParameter('tipo');
             if($("#f_new_albaran").length === 1){
+                $("#f_new_albaran select[name=forma_pago] option:not(:selected)").attr('disabled',true);
+                document.f_new_albaran.forma_pago.readonly = true;
                 var nombreCliente = $('h1 > a').text();
                 var codigoCliente = document.f_new_albaran.cliente.value;
                 var iddocumento = 0;
@@ -124,7 +126,8 @@ $(document).ready(function()
             break;
         case 'ventas_pedido':
             var pendiente = $("button:contains('Pendiente')");
-            if(pendiente){
+            $("select[name=forma_pago] option:not(:selected)").attr('disabled',true);
+            if(pendiente.length === 1){
                 var nombreCliente = document.f_pedido.ac_cliente.value;
                 var codigoCliente = document.f_pedido.cliente.value;
                 var iddocumento = document.f_pedido.idpedido.value;
@@ -134,13 +137,18 @@ $(document).ready(function()
             break;
         case 'ventas_albaran':
             var pendiente = $("button:contains('Pendiente')");
-            if(pendiente){
+            $("select[name=forma_pago] option:not(:selected)").attr('disabled',true);
+            if(pendiente.length === 1){
                 var nombreCliente = document.f_albaran.ac_cliente.value;
                 var codigoCliente = document.f_albaran.cliente.value;
                 var iddocumento = document.f_albaran.idalbaran.value;
                 var documento = 'albaran';
                 ventas(document.f_albaran);
             }
+            break;
+        case 'ventas_factura':
+            $("select[name=forma_pago] option:not(:selected)").attr('disabled',true);
+            $("input[name=fecha]").attr('readonly',true);
             break;
         default:
             break;

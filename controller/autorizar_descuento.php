@@ -68,9 +68,11 @@ class autorizar_descuento extends fs_controller{
             $autorizacion->fecha_creacion = \date('d-m-Y H:i:s');
             if($autorizacion->save())
             {
+                $lastval = (FS_DB_TYPE=='POSTGRESQL')?'SELECT LASTVAL() as lastval;':'SELECT LAST_INSERT_ID() as lastval;';
+                $id = $this->db->select($lastval);
                 $data['success']=true;
                 $data['descuento']=$descuento;
-                $data['mensaje']='¡Autorización número '.$autorizacion->id.' guardada correctamente!';
+                $data['mensaje']='¡Autorización número '.$id[0]['lastval'].' guardada correctamente!';
             }else{
                 $data['mensaje']='¡Ocurrió un error al guardar la autorización, intentelo nuevamente!';
             }
@@ -122,6 +124,14 @@ class autorizar_descuento extends fs_controller{
                 'name' => '002_admin_autorizaciones_js',
                 'page_from' => __CLASS__,
                 'page_to' => 'ventas_albaran',
+                'type' => 'head',
+                'text' => '<script src='.FS_PATH.'"plugins/autorizar_descuento/view/js/autorizar_descuento.js" type="text/javascript"></script>',
+                'params' => ''
+            ),
+            array(
+                'name' => '004_admin_autorizaciones_js',
+                'page_from' => __CLASS__,
+                'page_to' => 'ventas_factura',
                 'type' => 'head',
                 'text' => '<script src='.FS_PATH.'"plugins/autorizar_descuento/view/js/autorizar_descuento.js" type="text/javascript"></script>',
                 'params' => ''
