@@ -89,6 +89,7 @@ function ventas(formulario)
 
 $(document).ready(function()
 {
+    bootbox.setLocale('es');
     var getUrlParameter = function getUrlParameter(sParam) {
         var sPageURL = decodeURIComponent(window.location.search.substring(1)),
             sURLVariables = sPageURL.split('&'),
@@ -202,7 +203,7 @@ $(document).ready(function()
                         '</form>'+
                     '</div>'+
                     '<div class="well text-info">' +
-                        '¡El descuento solo se aplicará a los artículos que no tengan un descuento aplicado!'+
+                        '¡El descuento solo se aplicará a los artículos que no tengan un descuento diferente del 100%, si una linea tiene descuento se le agregará el descuento actual!'+
                     '</div>'+
                     '<div id="alerta_autorizacion" class="alert alert-warning hidden">' +
                     '</div>',
@@ -244,8 +245,10 @@ $(document).ready(function()
                                                 var item = this.id;
                                                 var item_parts = item.split('_');
                                                 var linea = item_parts[1];
-                                                if($('#dto_'+linea).val()==='0'){
-                                                    $('#dto_'+linea).val(datos.descuento);
+                                                if($('#dto_'+linea).val()!=='100'){
+                                                    var dscto_aplicado = Number($('#dto_'+linea).val());
+                                                    var nuevo_dto = dscto_aplicado+Number(datos.descuento);
+                                                    $('#dto_'+linea).val(nuevo_dto);
                                                 }
                                             });
                                             recalcular();
