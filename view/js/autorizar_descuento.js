@@ -255,7 +255,15 @@ $(document).ready(function()
                                             bootbox.alert({
                                                 title: "¡Descuento autorizado!",
                                                 message: datos.mensaje+'<br/>Se han recalculado los valores, proceda a guardar el documento.<br/>'+
-                                                    'Si agrega una nueva linea despues de esta autorización no se aplicará el descuento.'
+                                                    'Si agrega una nueva linea despues de esta autorización no se aplicará el descuento.',
+                                                callback: function(){ 
+                                                    console.log(documento);
+                                                    if(documento === 'pedido'){
+                                                        document.f_pedido.submit();
+                                                    }else if(documento === 'albaran'){
+                                                        document.f_albaran.submit();
+                                                    }
+                                                }
                                             });
                                         }
                                         else{
