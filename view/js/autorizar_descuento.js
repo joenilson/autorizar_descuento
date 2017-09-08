@@ -50,7 +50,7 @@ function nuevaVenta(tipoDocumento)
         });
     }
 
-    
+
 }
 
 function ventas(formulario)
@@ -62,7 +62,7 @@ function ventas(formulario)
         //Le agregamos despues de este el boton de Autorizar descuento
         botonImprimir.closest("div").append('<button id="btn_autorizar_descuento" class="btn btn-sm btn-default"><span class="fa fa-unlock"></span>&nbsp;Autorizar Descuento</button>');
         //Activamos el control para que no modifiquen la información de las lineas
-        $('#lineas_albaran > tr').each(function(idx) {
+        $('#lineas_doc > tr').each(function(idx) {
             var item = this.id;
             var item_parts = item.split('_');
             var linea = item_parts[1];
@@ -72,9 +72,9 @@ function ventas(formulario)
             $('#iva_'+linea).attr('readonly','true');
             $('#total_'+linea).attr('readonly','true');
         });
-        
+
         //Hacemos un seguimiento a las lineas_albaran para restringir a readonly cuando se agregue una linea nueva
-        $('#lineas_albaran').bind('DOMNodeInserted', function(element) {
+        $('#lineas_doc').bind('DOMNodeInserted', function(element) {
             var item = element.target.id;
             var item_parts = item.split('_');
             var linea = item_parts[1];
@@ -104,12 +104,12 @@ $(document).ready(function()
             }
         }
     };
-    
+
     //Obtenemos la información de la página
     var page = getUrlParameter('page');
     //Obtenemos el nick del usuario solicitante
     var usuario = $("li.user > a > span").text();
-    
+
     switch(page){
         case 'nueva_venta':
             //Guardamos el tipo de documento que se va autorizar
@@ -121,7 +121,7 @@ $(document).ready(function()
                 var codigoCliente = document.f_new_albaran.cliente.value;
                 var iddocumento = 0;
                 var documento = tipoDocumento;
-                
+
             }
             nuevaVenta(tipoDocumento);
             break;
@@ -154,9 +154,9 @@ $(document).ready(function()
         default:
             break;
     }
-    
+
     $('#btn_autorizar_descuento').click(function(event) {
-        var lineas = $("#lineas_albaran > tr").length;
+        var lineas = $("#lineas_doc > tr").length;
         event.preventDefault();
         if(lineas>0){
             bootbox.dialog({
@@ -176,7 +176,7 @@ $(document).ready(function()
                                             '<input id="usuario_input" name="usuario" autocomplete="off" type="text" required placeholder="Usuario que autoriza" class="col-sm-4 form-control input-sm"> ' +
                                         '</div> ' +
                                     '</div> ' +
-                                '</div>'+ 
+                                '</div>'+
                                 '<div id="password" class="form-group"> ' +
                                     '<label class="col-sm-4 control-label" for="password">Clave</label> ' +
                                     '<div class="col-sm-8"> ' +
@@ -184,7 +184,7 @@ $(document).ready(function()
                                             '<input id="password_input" name="password" type="password" required class="form-control input-sm" placeholder="Clave de autorización"> ' +
                                         '</div> ' +
                                     '</div> ' +
-                                '</div>'+    
+                                '</div>'+
                                 '<div  id="descuento" class="form-group"> ' +
                                     '<label class="col-sm-4 control-label" for="descuento">Descuento</label> ' +
                                     '<div class="col-sm-8"> ' +
@@ -199,7 +199,7 @@ $(document).ready(function()
                                     '</div> ' +
                                 '</div>' +
                             '</div>'+
-                            
+
                         '</form>'+
                     '</div>'+
                     '<div class="well text-info">' +
@@ -216,19 +216,19 @@ $(document).ready(function()
                             if(!$('#alerta_autorizacion').hasClass('hidden')){
                                 $('#alerta_autorizacion').addClass('hidden');
                             }
-                            
+
                             if($('#usuario').hasClass('has-error')){
                                 $('#usuario').removeClass('has-error');
                             }
-                            
+
                             if($('#password').hasClass('has-error')){
                                 $('#password').removeClass('has-error');
                             }
-                            
+
                             if($('#descuento').hasClass('has-error')){
                                 $('#descuento').removeClass('has-error');
                             }
-                            
+
                             var continuar = false;
                             if($('#usuario_input').val()!=='' && $('#password_input').val()!=='' && $('#descuento_input').val()!=='' ){
                                 continuar = true;
@@ -241,7 +241,7 @@ $(document).ready(function()
                                     data: $('#f_autorizar_descuento').serialize(),
                                     success : function(datos) {
                                         if(datos.success){
-                                            $('#lineas_albaran > tr').each(function(idx) {
+                                            $('#lineas_doc > tr').each(function(idx) {
                                                 var item = this.id;
                                                 var item_parts = item.split('_');
                                                 var linea = item_parts[1];
@@ -256,7 +256,7 @@ $(document).ready(function()
                                                 title: "¡Descuento autorizado!",
                                                 message: datos.mensaje+'<br/>Se han recalculado los valores, proceda a guardar el documento.<br/>'+
                                                     'Si agrega una nueva linea despues de esta autorización no se aplicará el descuento.',
-                                                callback: function(){ 
+                                                callback: function(){
                                                     console.log(documento);
                                                     if(documento === 'pedido'){
                                                         document.f_pedido.submit();
@@ -280,17 +280,17 @@ $(document).ready(function()
                             }
                             else
                             {
-                                
+
                                 if($('#usuario_input').val()==='')
                                 {
                                     $('#usuario').addClass('has-error');
                                 }
-                                
+
                                 if($('#password_input').val()==='')
                                 {
                                     $('#password').addClass('has-error');
                                 }
-                                
+
                                 if($('#descuento_input').val()==='')
                                 {
                                     $('#descuento').addClass('has-error');
@@ -317,7 +317,7 @@ $(document).ready(function()
         }
     });
 
-    
+
 });
 
 
