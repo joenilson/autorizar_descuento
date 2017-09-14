@@ -37,8 +37,8 @@ function nuevaVenta(tipoDocumento)
         var botonGuardar = $("button:contains('Guardar...')");
         //Le agregamos antes de este el boton de Autorizar descuento
         botonGuardar.closest("div").prepend('<button id="btn_autorizar_descuento" class="btn btn-sm btn-warning"><span class="fa fa-unlock"></span>&nbsp;Autorizar Descuento</button>');
-        //Hacemos un seguimiento a las lineas_albaran para restringir a readonly cuando se agregue una linea nueva
-        $('#lineas_albaran').bind('DOMNodeInserted', function(element) {
+        //Hacemos un seguimiento a las lineas_doc para restringir a readonly cuando se agregue una linea nueva
+        $('#lineas_doc').bind('DOMNodeInserted', function(element) {
             var item = element.target.id;
             var item_parts = item.split('_');
             var linea = item_parts[1];
@@ -49,8 +49,6 @@ function nuevaVenta(tipoDocumento)
             $('#total_'+linea).attr('readonly','true');
         });
     }
-
-
 }
 
 function ventas(formulario)
@@ -73,7 +71,7 @@ function ventas(formulario)
             $('#total_'+linea).attr('readonly','true');
         });
 
-        //Hacemos un seguimiento a las lineas_albaran para restringir a readonly cuando se agregue una linea nueva
+        //Hacemos un seguimiento a las lineas_doc para restringir a readonly cuando se agregue una linea nueva
         $('#lineas_doc').bind('DOMNodeInserted', function(element) {
             var item = element.target.id;
             var item_parts = item.split('_');
