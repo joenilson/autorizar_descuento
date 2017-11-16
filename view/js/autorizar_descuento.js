@@ -26,6 +26,31 @@ function verificarDescuento(element)
     element.value = element.value.replace(/[^0-9\.]/g,'');
 }
 
+function bloquearDescuentos()
+{
+    $('#lineas_doc > tr').each(function(idx) {
+        var item = this.id;
+        var item_parts = item.split('_');
+        var linea = item_parts[1];
+        $('#pvp_'+linea).attr('readonly',true);
+        $('#dto_'+linea).attr('readonly',true);
+        $('#dto2_'+linea).attr('readonly',true);
+        $('#dto3_'+linea).attr('readonly',true);
+        $('#dto4_'+linea).attr('readonly',true);
+        $('#neto_'+linea).attr('readonly',true);
+        $('#iva_'+linea).attr('readonly',true);
+        $('#total_'+linea).attr('readonly',true);
+    });
+
+    $('#adtopor1').attr('readonly',true);
+    $('#adtopor2').attr('readonly',true);
+    $('#adtopor3').attr('readonly',true);
+    $('#adtopor4').attr('readonly',true);
+    $('#adtopor5').attr('readonly',true); 
+    
+    $('#btn_bloquear_descuento').hide();
+}
+
 function nuevaVenta(tipoDocumento)
 {
     //Verificamos si ya se cargó el formulario de nueva_venta y si el documento no es del tipo presupuesto
@@ -44,10 +69,18 @@ function nuevaVenta(tipoDocumento)
             var linea = item_parts[1];
             $('#pvp_'+linea).attr('readonly','true');
             $('#dto_'+linea).attr('readonly','true');
+            $('#dto2_'+linea).attr('readonly','true');
+            $('#dto3_'+linea).attr('readonly','true');
+            $('#dto4_'+linea).attr('readonly','true');
             $('#neto_'+linea).attr('readonly','true');
             $('#iva_'+linea).attr('readonly','true');
             $('#total_'+linea).attr('readonly','true');
         });
+        $('#adtopor1').attr('readonly','true');
+        $('#adtopor2').attr('readonly','true');
+        $('#adtopor3').attr('readonly','true');
+        $('#adtopor4').attr('readonly','true');
+        $('#adtopor5').attr('readonly','true');
     }
 }
 
@@ -66,10 +99,18 @@ function ventas(formulario)
             var linea = item_parts[1];
             $('#pvp_'+linea).attr('readonly','true');
             $('#dto_'+linea).attr('readonly','true');
+            $('#dto2_'+linea).attr('readonly','true');
+            $('#dto3_'+linea).attr('readonly','true');
+            $('#dto4_'+linea).attr('readonly','true');
             $('#neto_'+linea).attr('readonly','true');
             $('#iva_'+linea).attr('readonly','true');
             $('#total_'+linea).attr('readonly','true');
         });
+        $('#adtopor1').attr('readonly','true');
+        $('#adtopor2').attr('readonly','true');
+        $('#adtopor3').attr('readonly','true');
+        $('#adtopor4').attr('readonly','true');
+        $('#adtopor5').attr('readonly','true');
 
         //Hacemos un seguimiento a las lineas_doc para restringir a readonly cuando se agregue una linea nueva
         $('#lineas_doc').bind('DOMNodeInserted', function(element) {
@@ -78,10 +119,20 @@ function ventas(formulario)
             var linea = item_parts[1];
             $('#pvp_'+linea).attr('readonly','true');
             $('#dto_'+linea).attr('readonly','true');
+            $('#dto2_'+linea).attr('readonly','true');
+            $('#dto3_'+linea).attr('readonly','true');
+            $('#dto4_'+linea).attr('readonly','true');
             $('#neto_'+linea).attr('readonly','true');
             $('#iva_'+linea).attr('readonly','true');
             $('#total_'+linea).attr('readonly','true');
         });
+        
+        $('#adtopor1').attr('readonly','true');
+        $('#adtopor2').attr('readonly','true');
+        $('#adtopor3').attr('readonly','true');
+        $('#adtopor4').attr('readonly','true');
+        $('#adtopor5').attr('readonly','true');
+        
     }
 }
 
@@ -119,7 +170,6 @@ $(document).ready(function()
                 var codigoCliente = document.f_new_albaran.cliente.value;
                 var iddocumento = 0;
                 var documento = tipoDocumento;
-
             }
             nuevaVenta(tipoDocumento);
             break;
@@ -183,25 +233,13 @@ $(document).ready(function()
                                         '</div> ' +
                                     '</div> ' +
                                 '</div>'+
-                                '<div  id="descuento" class="form-group"> ' +
-                                    '<label class="col-sm-4 control-label" for="descuento">Descuento</label> ' +
-                                    '<div class="col-sm-8"> ' +
-                                        '<div class="col-sm-3"> ' +
-                                            '<input autocomplete="off" id="descuento_input" name="descuento" onkeyup="verificarDescuento(this)" type="text" required class="form-control input-sm"> ' +
-                                        '</div> ' +
-                                    '</div> ' +
-                                    '<div class="col-sm-4"> ' +
-                                    '</div> ' +
-                                    '<div class="col-sm-8"> ' +
-                                        '<span class="help-block">Ingrese el porcentaje de descuento autorizado</span> ' +
-                                    '</div> ' +
-                                '</div>' +
                             '</div>'+
 
                         '</form>'+
                     '</div>'+
-                    '<div class="well text-info">' +
-                        '¡El descuento solo se aplicará a los artículos que no tengan un descuento diferente del 100%, si una linea tiene descuento se le agregará el descuento actual!'+
+                    '<div class="well text-primary">' +
+                        'Si el usuario es correcto se activarán la casillas de descuento para su edición.<br />'+
+                        'Al concluir deberá darle al boton <b>Bloquear Descuentos</b> para volver a aplicar los controles.<br />'+
                     '</div>'+
                     '<div id="alerta_autorizacion" class="alert alert-warning hidden">' +
                     '</div>',
@@ -223,12 +261,8 @@ $(document).ready(function()
                                 $('#password').removeClass('has-error');
                             }
 
-                            if($('#descuento').hasClass('has-error')){
-                                $('#descuento').removeClass('has-error');
-                            }
-
                             var continuar = false;
-                            if($('#usuario_input').val()!=='' && $('#password_input').val()!=='' && $('#descuento_input').val()!=='' ){
+                            if($('#usuario_input').val()!=='' && $('#password_input').val()!==''){
                                 continuar = true;
                             }
                             if(continuar){
@@ -243,28 +277,23 @@ $(document).ready(function()
                                                 var item = this.id;
                                                 var item_parts = item.split('_');
                                                 var linea = item_parts[1];
-                                                if($('#dto_'+linea).val()!=='100'){
-                                                    var dscto_aplicado = Number($('#dto_'+linea).val());
-                                                    var nuevo_dto = dscto_aplicado+Number(datos.descuento);
-                                                    $('#dto_'+linea).val(nuevo_dto);
-                                                }
+                                                $('#pvp_'+linea).attr('readonly',false);
+                                                $('#dto_'+linea).attr('readonly',false);
+                                                $('#dto2_'+linea).attr('readonly',false);
+                                                $('#dto3_'+linea).attr('readonly',false);
+                                                $('#dto4_'+linea).attr('readonly',false);
+                                                $('#neto_'+linea).attr('readonly',false);
+                                                $('#iva_'+linea).attr('readonly',false);
+                                                $('#total_'+linea).attr('readonly',false);
                                             });
-                                            recalcular();
-                                            bootbox.alert({
-                                                title: "¡Descuento autorizado!",
-                                                message: datos.mensaje+'<br/>Se han recalculado los valores, proceda a guardar el documento.<br/>'+
-                                                    'Si agrega una nueva linea despues de esta autorización no se aplicará el descuento.',
-                                                callback: function(){
-                                                    console.log(documento);
-                                                    if(documento === 'pedido'){
-                                                        document.f_pedido.submit();
-                                                    }else if(documento === 'albaran'){
-                                                        document.f_albaran.submit();
-                                                    }
-                                                }
-                                            });
-                                        }
-                                        else{
+
+                                            $('#adtopor1').attr('readonly',false);
+                                            $('#adtopor2').attr('readonly',false);
+                                            $('#adtopor3').attr('readonly',false);
+                                            $('#adtopor4').attr('readonly',false);
+                                            $('#adtopor5').attr('readonly',false);
+                                            $("#btn_autorizar_descuento").closest("div").append('<button id="btn_bloquear_descuento" type="button" onclick="bloquearDescuentos()" class="btn btn-sm btn-success"><span class="fa fa-lock"></span>&nbsp;Bloquear Descuentos</button>');
+                                        } else {
                                             bootbox.alert({
                                                 title: "¡Descuento no autorizado!",
                                                 message: datos.mensaje
@@ -289,10 +318,6 @@ $(document).ready(function()
                                     $('#password').addClass('has-error');
                                 }
 
-                                if($('#descuento_input').val()==='')
-                                {
-                                    $('#descuento').addClass('has-error');
-                                }
                                 $('#alerta_autorizacion').html('Complete la información de los campos resaltados en rojo');
                                 $('#alerta_autorizacion').removeClass('hidden');
                                 return false;
@@ -314,8 +339,11 @@ $(document).ready(function()
             bootbox.alert({title:'Solicitud incompleta',message:'¡Debes agregar artículos antes de solicitar una autorización de descuento!'});
         }
     });
-
-
+    
+    $("#btn_bloquear_descuento").click(function(event){
+        console.log(event);
+        console.log('Le dieron click');
+    });
 });
 
 

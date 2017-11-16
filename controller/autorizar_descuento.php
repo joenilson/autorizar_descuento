@@ -48,7 +48,6 @@ class autorizar_descuento extends fs_controller{
     {
         $usuario = \filter_input(INPUT_POST, 'usuario');
         $password = \filter_input(INPUT_POST, 'password');
-        $descuento = \filter_input(INPUT_POST, 'descuento');
         $codcliente = \filter_input(INPUT_POST, 'codcliente');
         $solicitante = \filter_input(INPUT_POST, 'solicitante');
         $documento = \filter_input(INPUT_POST, 'documento');
@@ -61,7 +60,7 @@ class autorizar_descuento extends fs_controller{
             $autorizacion->solicitante = ($solicitante)?$solicitante:$this->user->nick;
             $autorizacion->fecha = \date('d-m-Y');
             $autorizacion->codcliente = $codcliente;
-            $autorizacion->descuento = $descuento;
+            $autorizacion->descuento = 0;
             $autorizacion->documento = $documento;
             $autorizacion->iddocumento = $iddocumento;
             $autorizacion->usuario_creacion = $this->user->nick;
@@ -71,7 +70,6 @@ class autorizar_descuento extends fs_controller{
                 $lastval = (FS_DB_TYPE=='POSTGRESQL')?'SELECT LASTVAL() as lastval;':'SELECT LAST_INSERT_ID() as lastval;';
                 $id = $this->db->select($lastval);
                 $data['success']=true;
-                $data['descuento']=$descuento;
                 $data['mensaje']='¡Autorización número '.$id[0]['lastval'].' guardada correctamente!';
             }else{
                 $data['mensaje']='¡Ocurrió un error al guardar la autorización, intentelo nuevamente!';
